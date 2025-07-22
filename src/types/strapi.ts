@@ -1,7 +1,9 @@
 export interface StrapiEntity<T> {
-  id: number;
-  documentId: string;
-  attributes: T;
+  id: string; // This is the documentId (string) from Strapi v5
+  attributes: T & {
+    // Optional legacy numeric id, if it exists in your content type
+    id?: number; 
+  };
 }
 
 export interface StrapiRelation<T> {
