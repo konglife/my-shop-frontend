@@ -1,9 +1,9 @@
 <template>
   <div class="page-header-container">
     <n-breadcrumb>
-      <n-breadcrumb-item v-for="item in breadcrumbItems" :key="item.path">
-        <router-link v-if="item.path" :to="item.path">{{ item.label }}</router-link>
-        <span v-else>{{ item.label }}</span>
+      <n-breadcrumb-item v-for="(item, index) in breadcrumbItems" :key="index">
+        <router-link v-if="item.path" :to="item.path">{{ item.name }}</router-link>
+        <span v-else>{{ item.name }}</span>
       </n-breadcrumb-item>
     </n-breadcrumb>
     <div class="header-content">
@@ -21,7 +21,7 @@ import { useRoute } from 'vue-router';
 import { NBreadcrumb, NBreadcrumbItem, NH1 } from 'naive-ui';
 
 interface BreadcrumbItem {
-  label: string;
+  name: string;
   path?: string;
 }
 
@@ -30,20 +30,22 @@ defineProps<{ title: string }>();
 const route = useRoute();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
-  const items: BreadcrumbItem[] = [{ label: 'Dashboard', path: '/dashboard' }];
+  // Find the deepest matched route that has a breadcrumb meta field
+  const currentRoute = [...route.matched].reverse().find(r => r.meta && r.meta.breadcrumb);
 
-  route.matched.forEach(match => {
-    if (match.name && match.name !== 'Dashboard' && match.meta.title) {
-      // Check if it's the last item
-      const isLast = match.path === route.path;
-      items.push({
-        label: match.meta.title as string,
-        path: isLast ? undefined : match.path,
-      });
-    }
-  });
+  if (currentRoute && currentRoute.meta.breadcrumb) {
+    return currentRoute.meta.breadcrumb as BreadcrumbItem[];
+  }
 
-  return items;
+  // Fallback for routes without explicit breadcrumb meta
+  if (route.meta.title) {
+    return [
+      { name: 'Dashboard', path: '/dashboard' },
+      { name: route.meta.title as string }
+    ];
+  }
+
+  return [{ name: 'Dashboard', path: '/dashboard' }];
 });
 </script>
 

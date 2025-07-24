@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores/authStore';
 
 // Import layouts and views
 import MainLayout from '@/layouts/MainLayout.vue';
+import RouterPassThrough from '@/layouts/RouterPassThrough.vue';
 import LoginView from '@/views/auth/LoginView.vue';
 import DashboardView from '@/views/DashboardView.vue';
 
@@ -38,8 +39,35 @@ const routes = [
       },
       {
         path: 'categories',
-        name: 'Categories',
-        component: () => import('@/views/categories/CategoriesView.vue')
+        component: RouterPassThrough,
+        children: [
+          {
+            path: '',
+            name: 'Categories',
+            component: () => import('@/views/categories/CategoriesView.vue'),
+            meta: {
+              title: 'Categories',
+              breadcrumb: [
+                { name: 'Dashboard', path: '/dashboard' },
+                { name: 'Categories' }
+              ]
+            },
+          },
+          {
+            path: ':id',
+            name: 'CategoryDetail',
+            component: () => import('@/views/categories/CategoryDetailView.vue'),
+            props: true,
+            meta: {
+              title: 'Category Details',
+              breadcrumb: [
+                { name: 'Dashboard', path: '/dashboard' },
+                { name: 'Categories', path: '/categories' },
+                { name: 'Details' }
+              ]
+            },
+          },
+        ],
       },
       {
         path: 'units',
@@ -60,7 +88,7 @@ const routes = [
       },
       {
         path: 'purchases',
-        component: { template: '<router-view />' },
+        component: RouterPassThrough,
         meta: { title: 'Purchases' },
         children: [
           {
@@ -86,7 +114,7 @@ const routes = [
       },
       {
         path: 'sales',
-        component: { template: '<router-view />' },
+        component: RouterPassThrough,
         meta: { title: 'Sales' },
         children: [
           {

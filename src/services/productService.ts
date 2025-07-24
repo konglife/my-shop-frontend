@@ -53,3 +53,21 @@ export async function deleteProduct(documentId: string): Promise<void> {
   await apiClient.delete(`/api/products/${documentId}`);
 }
 
+/**
+ * Fetches all products belonging to a specific category.
+ * @param categoryDocumentId - The document ID of the category.
+ */
+export async function getProductsByCategory(categoryDocumentId: string): Promise<StrapiResponse<StrapiEntity<Product>[]>> {
+  const queryString = buildStrapiQuery({
+    filters: {
+      category: {
+        documentId: {
+          $eq: categoryDocumentId,
+        },
+      },
+    },
+    populate: ['unit', 'stock'], // Category is already known
+  });
+  const response = await apiClient.get<StrapiResponse<StrapiEntity<Product>[]>>(`/api/products?${queryString}`);
+  return response.data;
+}

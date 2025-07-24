@@ -2,20 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-07-24]
+
+### Changed
+- **UI/UX:** Refactored `CategoryDetailView.vue` to use `n-card` and `n-grid` instead of `n-descriptions`, improving the layout's readability and modernizing its appearance.
+
+### Fixed
+- **Code Quality:** Removed unused Naive UI component imports (`NDescriptions`, `NDescriptionsItem`, `NH3`) from `CategoryDetailView.vue`.
+
 ## [2025-07-22]
 
 ### Added
+- **Features:** Implemented a full `CategoryDetailView.vue` page, allowing users to view all details of a specific category.
 - **Architecture:** Developed a reusable `useCrud.ts` composable to abstract and centralize CRUD logic.
-- **Components:** Created a reusable `ActionButtons.vue` component for standardized Edit/Delete actions in data tables.
+- **Components:** 
+  - Created a reusable `ActionButtons.vue` component for standardized Edit/Delete actions.
+  - Created `RouterPassThrough.vue` to properly handle nested routes without runtime warnings.
 
 ### Changed
-- **Architecture:** Refactored `CategoriesView.vue` to be the first implementation of the new `useCrud` composable, significantly simplifying its state management and data-handling logic.
-- **UI/UX:** Enhanced the `CategoriesView.vue` layout by wrapping the data table in an `n-card` for better visual structure.
-- **Types:** Updated `strapi.ts` types to more accurately reflect the Strapi v5 API structure, particularly the use of a string-based `id` as the primary document identifier.
+- **Categories Module:** The entire module is now fully functional with Create, Read (List & Detail), Update, and Delete operations.
+- **Architecture:** Refactored `CategoriesView.vue` to be the first implementation of the new `useCrud` composable.
+- **Routing:** Updated `router/index.ts` with nested routes for categories and added `meta.breadcrumb` data to generate hierarchical navigation.
+- **UI/UX:** 
+  - Enhanced the `CategoriesView.vue` layout by wrapping the data table in an `n-card`.
+  - Refactored `PageHeader.vue` to dynamically generate correct, clickable breadcrumbs from route metadata.
 
 ### Fixed
-- **Categories View:** Corrected a critical bug where category names were not displayed. This was caused by a mismatch between the custom flattened API response and the data structure expected by the frontend. The issue was resolved by creating a `serviceAdapter` to transform the data into a standard format before processing.
-- **Code Quality:** Eliminated all TypeScript errors and warnings that arose during the refactoring of `useCrud.ts` and `CategoriesView.vue`.
+- **Editing:** Resolved a `400 Bad Request` error during category updates by ensuring only permitted data fields are sent in the payload.
+- **Display:** Corrected a critical bug where category names were not displayed due to a data structure mismatch.
+- **Navigation:** Fixed incorrect breadcrumb navigation on detail pages.
+- **Core:** Eliminated a Vue runtime compilation warning related to inline templates in the router.
+- **Code Quality:** Eliminated all TypeScript errors and warnings that arose during the refactoring.
 
 ## [2025-07-21]
 

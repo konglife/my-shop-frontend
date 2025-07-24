@@ -13,6 +13,16 @@ export async function getCategories(): Promise<StrapiResponse<StrapiEntity<Categ
 }
 
 /**
+ * Fetches a single category by its document ID.
+ * @param documentId - The document ID of the category to fetch.
+ */
+export async function getCategory(documentId: string): Promise<StrapiResponse<StrapiEntity<Category>>> {
+  const queryString = buildStrapiQuery({ populate: '*' });
+  const response = await apiClient.get<StrapiResponse<StrapiEntity<Category>>>(`/api/categories/${documentId}?${queryString}`);
+  return response.data;
+}
+
+/**
  * Creates a new category.
  * @param categoryData - The data for the new category.
  */
@@ -40,4 +50,3 @@ export async function updateCategory(documentId: string, categoryData: Partial<C
 export async function deleteCategory(documentId: string): Promise<void> {
   await apiClient.delete(`/api/categories/${documentId}`);
 }
-

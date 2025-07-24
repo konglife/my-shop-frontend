@@ -31,6 +31,7 @@
 
 <script setup lang="ts">
 import { h, ref } from 'vue';
+import { RouterLink } from 'vue-router';
 import PageHeader from '@/components/PageHeader.vue';
 import DataTableWrapper from '@/components/DataTableWrapper.vue';
 import ActionButtons from '@/components/ActionButtons.vue';
@@ -106,8 +107,14 @@ const handleEdit = (category: FlatCategory) => {
   showModal.value = true;
 };
 
-const handleSave = async (formData: Category) => {
-  await saveItem(formData, currentCategory.value?.id);
+const handleSave = async (formData: Partial<FlatCategory>) => {
+  // The backend only expects the 'name' field for a category.
+  // We must strip out other fields like 'id', 'numericId' etc. that are
+  // part of the frontend's FlatCategory model.
+  const payload: Category = {
+    name: formData.name || '',
+  };
+  await saveItem(payload, currentCategory.value?.id);
   showModal.value = false;
 };
 
@@ -120,6 +127,15 @@ const createColumns = (): DataTableColumns<FlatCategory> => [
   {
     title: 'Name',
     key: 'name',
+    render(row) {
+      return h(
+        RouterLink,
+        {
+          to: { name: 'CategoryDetail', params: { id: row.id } },
+        },
+        { default: () => row.name }
+      );
+    },
   },
   {
     title: 'Actions',
