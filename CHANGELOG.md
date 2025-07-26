@@ -5,9 +5,11 @@ All notable changes to this project will be documented in this file.
 ## [2025-07-26]
 
 ### Added
+- **UI/UX:** Added a "Created At" column to the categories table for better tracking.
 - **UI/UX:** Added a search input and a total count summary to the `CategoriesView.vue` list page.
 
 ### Changed
+- **UI/UX (Categories View):** Overhauled the design of the main category list for a more modern look and feel. This includes using a striped table, icon-based action buttons (View, Edit, Delete), and styling the ID column with tags.
 - **UI/UX:** The layout of `CategoriesView.vue` has been significantly improved by moving the "Add" button and restructuring the header of the main card.
 - **UI/UX:** Updated the `MainLayout.vue` to improve the overall look and feel.
   - Constrained the main content area to a `max-width` of 1280px to prevent it from stretching on wide screens.

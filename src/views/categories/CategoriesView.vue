@@ -3,7 +3,7 @@
     <page-header title="Categories" />
 
     <div class="p-4">
-      <n-card :bordered="false" size="small">
+      <n-card :bordered="false" size="small" class="p-4 bg-white rounded-lg shadow-sm">
         <template #header>
           <n-space align="center" justify="space-between" class="w-full">
             <span class="text-lg font-bold">Category List</span>
@@ -26,6 +26,7 @@
           :columns="columns"
           :bordered="false"
           :single-line="false"
+          striped
           remote
           @retry="fetchCategories"
         />
@@ -48,7 +49,7 @@
 
 <script setup lang="ts">
 import { h, ref, computed } from 'vue';
-import { RouterLink } from 'vue-router';
+import { useRouter } from 'vue-router';
 import PageHeader from '@/components/PageHeader.vue';
 import DataTableWrapper from '@/components/DataTableWrapper.vue';
 import ActionButtons from '@/components/ActionButtons.vue';
@@ -56,12 +57,13 @@ import CategoryFormModal from './CategoryFormModal.vue';
 import { useCrud, type ViewItem } from '@/composables/useCrud';
 import * as categoryService from '@/services/categoryService';
 import type { Category } from '@/types/category';
-import { NButton, NCard, NInput, NSpace, type DataTableColumns } from 'naive-ui';
+import { NButton, NCard, NInput, NSpace, NTag, type DataTableColumns } from 'naive-ui';
 
 // Define a local type for the flattened category structure used in the view
 interface FlatCategory extends ViewItem {
   name: string;
   numericId?: number; // The legacy numeric ID from Strapi attributes
+  createdAt: string;
 }
 
 // The API returns a non-standard flattened structure.
@@ -76,6 +78,7 @@ const serviceAdapter = {
         numericId: item.id,
         name: item.name,
         documentId: item.documentId,
+        createdAt: item.createdAt,
       },
     }));
     // Add the required 'meta' property for StrapiResponse compatibility
@@ -141,8 +144,13 @@ const filteredCategories = computed(() => {
   );
 });
 
+const router = useRouter();
 const showModal = ref(false);
 const currentCategory = ref<Partial<FlatCategory> | null>(null);
+
+const handleView = (category: FlatCategory) => {
+  router.push({ name: 'CategoryDetail', params: { id: category.id } });
+};
 
 const handleAdd = () => {
   currentCategory.value = {};
@@ -170,19 +178,20 @@ const createColumns = (): DataTableColumns<FlatCategory> => [
     title: 'ID',
     key: 'numericId',
     width: 100,
+    render(row) {
+      return h(NTag, { type: 'info', bordered: false }, { default: () => row.numericId });
+    }
   },
   {
     title: 'Name',
     key: 'name',
+  },
+  {
+    title: 'Created At',
+    key: 'createdAt',
     render(row) {
-      return h(
-        RouterLink,
-        {
-          to: { name: 'CategoryDetail', params: { id: row.id } },
-        },
-        { default: () => row.name }
-      );
-    },
+      return new Date(row.createdAt).toLocaleString();
+    }
   },
   {
     title: 'Actions',
@@ -191,6 +200,7 @@ const createColumns = (): DataTableColumns<FlatCategory> => [
     align: 'center',
     render(row) {
       return h(ActionButtons, {
+        onView: () => handleView(row),
         onEdit: () => handleEdit(row),
         onDelete: () => deleteItem(row),
       });
