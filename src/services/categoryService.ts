@@ -5,9 +5,11 @@ import type { StrapiResponse, StrapiEntity, StrapiRequestData } from '@/types/st
 
 /**
  * Fetches all categories from the API.
+ * @param query - An optional Strapi query string for sorting, filtering, etc.
  */
-export async function getCategories(): Promise<StrapiResponse<StrapiEntity<Category>[]>> {
-  const queryString = buildStrapiQuery({ populate: '*' });
+export async function getCategories(query?: string): Promise<StrapiResponse<StrapiEntity<Category>[]>> {
+  const defaultQuery = buildStrapiQuery({ populate: '*' });
+  const queryString = query ? `${defaultQuery}&${query}` : defaultQuery;
   const response = await apiClient.get<StrapiResponse<StrapiEntity<Category>[]>>(`/api/categories?${queryString}`);
   return response.data;
 }

@@ -11,12 +11,14 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - **UI/UX (Categories View):** Overhauled the design of the main category list for a more modern look and feel. This includes using a striped table, icon-based action buttons (View, Edit, Delete), and styling the ID column with tags.
 - **UI/UX:** The layout of `CategoriesView.vue` has been significantly improved by moving the "Add" button and restructuring the header of the main card.
+- **Features (Categories View):** Implemented server-side sorting for the ID, Name, and Created At columns.
 - **UI/UX:** Updated the `MainLayout.vue` to improve the overall look and feel.
   - Constrained the main content area to a `max-width` of 1280px to prevent it from stretching on wide screens.
   - Set a light gray background color for the content layout area to create a visual distinction and a "floating" effect for the page content.
   - Ensured the content area always fills the full height of the viewport by applying a `min-height`.
 
 ### Fixed
+- **Sorting (Categories View):** Fixed a `400 Bad Request` error when sorting by the ID column. The data table was sending a frontend-aliased key (`numericId`) instead of the actual API field name (`id`).
 - **Type Safety:** Resolved a series of cascading TypeScript errors in `CategoriesView.vue` by correctly adapting a custom API response to the strictly-typed `StrapiResponse` expected by the `useCrud` composable.
 - **API:** Corrected a critical filtering bug in `productService.getProductsByCategory` where the filter was targeting the wrong field (`documentId` instead of `id`).
 

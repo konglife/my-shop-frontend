@@ -28,7 +28,8 @@
           :single-line="false"
           striped
           remote
-          @retry="fetchCategories"
+          @retry="fetchCategories(queryString)"
+          @update:sorter="handleSort"
         />
         
         <template #footer>
@@ -48,8 +49,9 @@
 </template>
 
 <script setup lang="ts">
-import { h, ref, computed } from 'vue';
+import { h, ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { buildStrapiQuery } from '@/utils/strapiQueryBuilder';
 import PageHeader from '@/components/PageHeader.vue';
 import DataTableWrapper from '@/components/DataTableWrapper.vue';
 import ActionButtons from '@/components/ActionButtons.vue';
@@ -57,7 +59,7 @@ import CategoryFormModal from './CategoryFormModal.vue';
 import { useCrud, type ViewItem } from '@/composables/useCrud';
 import * as categoryService from '@/services/categoryService';
 import type { Category } from '@/types/category';
-import { NButton, NCard, NInput, NSpace, NTag, type DataTableColumns } from 'naive-ui';
+import { NButton, NCard, NInput, NSpace, NTag, type DataTableColumns, type DataTableSortState } from 'naive-ui';
 
 // Define a local type for the flattened category structure used in the view
 interface FlatCategory extends ViewItem {
@@ -70,8 +72,8 @@ interface FlatCategory extends ViewItem {
 // This adapter transforms the flat response into the standard StrapiEntity structure
 // that the useCrud composable expects.
 const serviceAdapter = {
-  getAll: async () => {
-    const response = await categoryService.getCategories();
+  getAll: async (query?: string) => {
+    const response = await categoryService.getCategories(query);
     const transformedData = (response.data as any[]).map(item => ({
       id: item.documentId,
       attributes: {
@@ -122,6 +124,7 @@ const serviceAdapter = {
 };
 
 const searchQuery = ref('');
+const sorter = ref<DataTableSortState | null>(null);
 
 const {
   loading,
@@ -132,8 +135,28 @@ const {
   fetchItems: fetchCategories,
 } = useCrud<FlatCategory, Category, Category, Partial<Category>>(serviceAdapter, {
   itemName: 'Category',
-  initialFetch: true,
+  initialFetch: false, // We will trigger fetch manually via watcher
 });
+
+const queryString = computed(() => {
+  const sortKey = sorter.value?.columnKey;
+  const sortOrder = sorter.value?.order;
+  let sortQuery = '';
+
+  if (sortKey && sortOrder) {
+    const order = sortOrder === 'ascend' ? 'asc' : 'desc';
+    sortQuery = `${sortKey}:${order}`;
+  }
+
+  return buildStrapiQuery({
+    sort: sortQuery || undefined,
+  });
+});
+
+watch(queryString, (newQuery) => {
+  fetchCategories(newQuery);
+}, { immediate: true });
+
 
 const filteredCategories = computed(() => {
   if (!searchQuery.value) {
@@ -147,6 +170,10 @@ const filteredCategories = computed(() => {
 const router = useRouter();
 const showModal = ref(false);
 const currentCategory = ref<Partial<FlatCategory> | null>(null);
+
+const handleSort = (options: DataTableSortState) => {
+  sorter.value = options;
+};
 
 const handleView = (category: FlatCategory) => {
   router.push({ name: 'CategoryDetail', params: { id: category.id } });
@@ -176,8 +203,9 @@ const handleSave = async (formData: Partial<FlatCategory>) => {
 const createColumns = (): DataTableColumns<FlatCategory> => [
   {
     title: 'ID',
-    key: 'numericId',
+    key: 'id', // Corrected: Use the actual API field name 'id' for sorting
     width: 100,
+    sorter: true,
     render(row) {
       return h(NTag, { type: 'info', bordered: false }, { default: () => row.numericId });
     }
@@ -185,10 +213,12 @@ const createColumns = (): DataTableColumns<FlatCategory> => [
   {
     title: 'Name',
     key: 'name',
+    sorter: true,
   },
   {
     title: 'Created At',
     key: 'createdAt',
+    sorter: true,
     render(row) {
       return new Date(row.createdAt).toLocaleString();
     }
