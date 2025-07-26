@@ -2,12 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2025-07-24]
+## [2025-07-26]
 
 ### Changed
+- **UI/UX:** Updated the `MainLayout.vue` to improve the overall look and feel.
+  - Constrained the main content area to a `max-width` of 1280px to prevent it from stretching on wide screens.
+  - Set a light gray background color for the content layout area to create a visual distinction and a "floating" effect for the page content.
+  - Ensured the content area always fills the full height of the viewport by applying a `min-height`.
+
+## [2025-07-24]
+
+### Added
+- **Features:** Implemented a full `UnitDetailView.vue` page and added the corresponding `getUnit` function to the `unitService`.
+- **Routing:** Added nested routes for the Units module, including a detail page and breadcrumb metadata.
+
+### Changed
+- **Units Module:** Refactored the entire Units module (`UnitsView.vue`) to use the centralized `useCrud.ts` composable, aligning its architecture with the Categories module.
+- **Composables:** Refactored `useCrud.ts` to correctly handle the `StrapiResponse` type from services, making it compatible with the entire project.
 - **UI/UX:** Refactored `CategoryDetailView.vue` to use `n-card` and `n-grid` instead of `n-descriptions`, improving the layout's readability and modernizing its appearance.
 
 ### Fixed
+- **Code Quality:** Resolved numerous TypeScript errors in `UnitsView.vue` and `useCrud.ts` related to type mismatches and incorrect composable usage.
 - **Code Quality:** Removed unused Naive UI component imports (`NDescriptions`, `NDescriptionsItem`, `NH3`) from `CategoryDetailView.vue`.
 
 ## [2025-07-22]

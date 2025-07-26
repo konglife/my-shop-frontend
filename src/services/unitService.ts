@@ -4,6 +4,16 @@ import type { Unit } from '@/types/unit';
 import type { StrapiResponse, StrapiEntity, StrapiRequestData } from '@/types/strapi';
 
 /**
+ * Fetches a single unit by its document ID.
+ * @param documentId - The document ID of the unit to fetch.
+ */
+export async function getUnit(documentId: string): Promise<StrapiResponse<StrapiEntity<Unit>>> {
+  const query = buildStrapiQuery({ populate: '*' });
+  const response = await apiClient.get<StrapiResponse<StrapiEntity<Unit>>>(`/api/units/${documentId}?${query}`);
+  return response.data;
+}
+
+/**
  * Fetches all units from the API.
  */
 export async function getUnits(): Promise<StrapiResponse<StrapiEntity<Unit>[]>> {

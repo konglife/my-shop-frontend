@@ -38,8 +38,10 @@
         />
       </n-layout-sider>
 
-      <n-layout-content style="padding: 24px;" :native-scrollbar="false">
-        <router-view />
+      <n-layout-content style="padding: 24px; background-color: #f0f2f5; min-height: calc(100vh - 64px);" :native-scrollbar="false">
+        <div style="max-width: 1280px; margin: 0 auto;">
+          <router-view />
+        </div>
       </n-layout-content>
     </n-layout>
 

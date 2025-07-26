@@ -1,6 +1,6 @@
 import { ref, onMounted } from 'vue';
 import { useMessage, useDialog } from 'naive-ui';
-import type { StrapiCollection, StrapiEntity } from '@/types/strapi';
+import type { StrapiCollection, StrapiEntity, StrapiResponse } from '@/types/strapi';
 
 // A flattened entity type for use in views, must have a string id (documentId)
 export interface ViewItem {
@@ -9,9 +9,9 @@ export interface ViewItem {
 
 // Define the structure for a generic service
 interface CrudService<T_Response, T_Create, T_Update> {
-  getAll(query?: string): Promise<StrapiCollection<T_Response>>;
-  create(data: T_Create): Promise<StrapiEntity<T_Response>>;
-  update(id: string, data: T_Update): Promise<StrapiEntity<T_Response>>;
+  getAll(query?: string): Promise<StrapiResponse<StrapiEntity<T_Response>[]>>;
+  create(data: T_Create): Promise<StrapiResponse<StrapiEntity<T_Response>>>;
+  update(id: string, data: T_Update): Promise<StrapiResponse<StrapiEntity<T_Response>>>;
   remove(id: string): Promise<any>; // Allow remove to return any promise
 }
 
@@ -53,7 +53,7 @@ export function useCrud<
     error.value = null;
     try {
       const response = await service.getAll(query);
-      const fetchedItems = response.data.map(item => {
+      const fetchedItems = response.data.map((item: StrapiEntity<T_Response>) => {
         return {
           ...item.attributes,
           id: item.id, // The string documentId
@@ -75,10 +75,11 @@ export function useCrud<
     const isUpdating = !!documentId;
     const action = isUpdating ? 'updating' : 'creating';
     try {
-      const savedItemEntity = isUpdating
+      const response = isUpdating
         ? await service.update(documentId as string, formData as T_Update)
         : await service.create(formData as T_Create);
       
+      const savedItemEntity = response.data;
       message.success(`${itemName} ${isUpdating ? 'updated' : 'created'} successfully!`);
       await fetchItems(); // Refresh list
 

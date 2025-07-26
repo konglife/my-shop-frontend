@@ -71,8 +71,35 @@ const routes = [
       },
       {
         path: 'units',
-        name: 'Units',
-        component: () => import('@/views/units/UnitsView.vue')
+        component: RouterPassThrough,
+        children: [
+          {
+            path: '',
+            name: 'Units',
+            component: () => import('@/views/units/UnitsView.vue'),
+            meta: {
+              title: 'Units',
+              breadcrumb: [
+                { name: 'Dashboard', path: '/dashboard' },
+                { name: 'Units' }
+              ]
+            },
+          },
+          {
+            path: ':id',
+            name: 'UnitDetails',
+            component: () => import('@/views/units/UnitDetailView.vue'),
+            props: true,
+            meta: {
+              title: 'Unit Details',
+              breadcrumb: [
+                { name: 'Dashboard', path: '/dashboard' },
+                { name: 'Units', path: '/units' },
+                { name: 'Details' }
+              ]
+            },
+          },
+        ],
       },
       {
         path: 'customers',
