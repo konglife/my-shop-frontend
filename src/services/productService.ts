@@ -61,7 +61,7 @@ export async function getProductsByCategory(categoryDocumentId: string): Promise
   const queryString = buildStrapiQuery({
     filters: {
       category: {
-        documentId: {
+        id: { // Corrected: Strapi filters by the relation's 'id' (documentId) directly
           $eq: categoryDocumentId,
         },
       },

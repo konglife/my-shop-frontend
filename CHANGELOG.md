@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-07-26] - UI/UX Overhaul for Categories
+
+### Added
+- **Features:** Added a "Related Products" table to the `CategoryDetailView.vue`, allowing users to see all products within a category directly on the detail page.
+- **UI/UX:** Added a search input and a total count summary to the `CategoriesView.vue` list page.
+
+### Changed
+- **UI/UX:** The layout of `CategoriesView.vue` has been significantly improved by moving the "Add" button and restructuring the header of the main card.
+
+### Fixed
+- **Type Safety:** Resolved a series of cascading TypeScript errors in `CategoriesView.vue` by correctly adapting a custom API response to the strictly-typed `StrapiResponse` expected by the `useCrud` composable.
+- **API:** Corrected a critical filtering bug in `productService.getProductsByCategory` where the filter was targeting the wrong field (`documentId` instead of `id`).
+
 ## [2025-07-26]
 
 ### Changed
